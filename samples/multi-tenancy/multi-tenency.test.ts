@@ -64,7 +64,7 @@ it('Multi-tenancy test', async () => {
         },
     });
 
-    // Adam shouldn't be able to add Joe to the org
+    // Adam shouldn't be able to add Joe to the org because he's not admin
     await expect(
         adamDb.org.update({
             where: { id: apple.id },
