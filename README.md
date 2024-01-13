@@ -2,7 +2,7 @@
 
 ## What's ZenStack
 
-ZenStack is a NodeJS full-stack toolkit which supercharges [Prisma ORM](https://prisma.io) in many ways. Please [read here](https://zenstack.dev/docs) first.
+[ZenStack](https://github.com/zenstackhq/zenstack) is a NodeJS full-stack toolkit which supercharges [Prisma ORM](https://prisma.io) in many ways. Please [read here](https://zenstack.dev/docs) first.
 
 ## About This Repo
 
@@ -18,3 +18,15 @@ Make sure ["pnpm" is installed](https://pnpm.io/installation).
 -   cd samples/[sample folder]
 -   pnpm generate
 -   pnpm test
+
+## Catalog
+
+- [simple-acl](samples/simple-acl): simple access control list
+- [simple-rbac](samples/simple-rbac): simple role-based access control
+- [simple-abac](samples/simple-abac): simple attribute-based access control
+- [multi-tenancy](samples/multi-tenancy): SaaS-like multi-tenancy authorization
+
+## Not Finding What You Want?
+
+Please join [ZenStack Discord](https://discord.gg/Ykhr738dUe) to let us know your needs.
+
