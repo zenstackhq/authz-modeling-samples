@@ -1,0 +1,89 @@
+datasource db {
+    provider = 'sqlite'
+    url = 'file:dev.db'
+}
+
+generator client {
+    provider = 'prisma-client-js'
+    output = '../.prisma/client'
+}
+
+model User {
+    id Int @id @default(autoincrement())
+    name String
+    reputation Int @default(1)
+    memberships OrgMember[]
+    ownedResources Resource[]
+
+    // can be created by anyone, even not logged in
+    @@allow('create', true)
+
+    // can be read by users sharing any org
+    @@allow('read', memberships?[org.members?[user == auth()]])
+
+    // full access by oneself
+    @@allow('all', auth() == this)
+}
+
+model Org {
+    id Int @id @default(autoincrement())
+    name String
+    members OrgMember[]
+    resources Resource[]
+
+    // require login
+    @@deny('all', auth() == null)
+
+    // everyone can create an org
+    @@allow('create', true)
+
+    // any user in the org can read the org
+    @@allow('read', members?[user == auth()])
+
+    // org admin can update and delete
+    @@allow('update,delete', members?[user == auth() && role == 'ADMIN'])
+}
+
+model OrgMember {
+    id Int @id @default(autoincrement())
+    org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    orgId Int
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId Int
+    role String // "ADMIN", "MEMBER"
+
+    // require login
+    @@deny('all', auth() == null)
+
+    // org admin can create/update/delete
+    @@allow('create,update,delete', org.members?[user == auth() && role == 'ADMIN'])
+
+    // user can read members of an org if he's a member of it
+    @@allow('read', org.members?[user == auth()])
+}
+
+model Resource {
+    id Int @id @default(autoincrement())
+    name String
+    public Boolean @default(false)
+    owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    ownerId Int
+    org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    orgId Int
+
+    // require login
+    @@deny('all', auth() == null)
+
+    // can be read by owner or org members (if public) 
+    @@allow('read', owner == auth() || (org.members?[user == auth()] && public))
+
+    // when create, owner must be set to current user, and user must be in the org
+    @@allow('create', owner == auth() && org.members?[user == auth()])
+
+    // can be updated by owner
+    // update is not allowed to change owner
+    @@allow('update', owner == auth() && future().owner == owner)
+
+    // can be deleted by owner
+    @@allow('delete', owner == auth())
+}

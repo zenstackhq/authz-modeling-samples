@@ -1,0 +1,14 @@
+{
+	"devDependencies": {
+		"@types/jest": "^29.5.11",
+		"@types/node": "^20.11.0",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.3.3",
+		"zenstack": "^1.6.2"
+	},
+	"dependencies": {
+		"jest": "^29.7.0",
+		"ts-jest": "^29.1.1",
+		"tsx": "^4.7.0"
+	}
+}

@@ -1,0 +1,50 @@
+datasource db {
+    provider = 'sqlite'
+    url = 'file:dev.db'
+}
+
+generator client {
+    provider = 'prisma-client-js'
+    output = '../.prisma/client'
+}
+
+model User {
+    id Int @id @default(autoincrement())
+    name String
+    access Access[]
+    ownedResources Resource[]
+}
+
+model Access {
+    id Int @id @default(autoincrement())
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId Int
+    resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+    resourceId Int
+
+    // view permission
+    view Boolean?
+
+    // manage permission
+    manage Boolean?
+
+    // resource owner has full control over its access list
+    @@allow('all', resource.owner == auth())
+}
+
+model Resource {
+    id Int @id @default(autoincrement())
+    name String
+    owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    ownerId Int
+    access Access[]
+
+    // owner has full control
+    @@allow('all', owner == auth())
+
+    // readable if there exists a "read" permission for the current user
+    @@allow('read', access?[user == auth() && view])
+
+    // writeable if there exists a "manage" permission for the current user
+    @@allow('update,delete', access?[user == auth() && manage])
+}

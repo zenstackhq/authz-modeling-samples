@@ -1,0 +1,36 @@
+datasource db {
+    provider = 'sqlite'
+    url = 'file:dev.db'
+}
+
+generator client {
+    provider = 'prisma-client-js'
+    output = '../.prisma/client'
+}
+
+model User {
+    id Int @id @default(autoincrement())
+    name String
+    roles Role[]
+}
+
+model Role {
+    id Int @id @default(autoincrement())
+    name String
+    users User[] // users belonging to the role
+    permissions Permission[] // permissions assigned to the role
+}
+
+model Permission {
+    id Int @id @default(autoincrement())
+    name String // "view" or "manage", use an enum if database supports it
+    roles Role[]
+}
+
+model Resource {
+    id Int @id @default(autoincrement())
+    name String
+
+    @@allow('read', auth().roles?[permissions?[name == 'view']])
+    @@allow('all', auth().roles?[permissions?[name == 'manage']])
+}

@@ -1,0 +1,33 @@
+datasource db {
+    provider = 'sqlite'
+    url = 'file:dev.db'
+}
+
+generator client {
+    provider = 'prisma-client-js'
+    output = '../.prisma/client'
+}
+
+model User {
+    id Int @id @default(autoincrement())
+    name String
+    reputation Int @default(1) // controls if a user can create a resource
+    ownedResources Resource[]
+}
+
+model Resource {
+    id Int @id @default(autoincrement())
+    name String
+    published Boolean @default(false)
+    owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    ownerId Int
+
+    // user can create resources if he has enough reputation
+    @@allow('create', auth().reputation >= 100)
+
+    // published resources can be read by anyone
+    @@allow('read', published)
+
+    // owner has full access
+    @@allow('read,update,delete', owner == auth())
+}

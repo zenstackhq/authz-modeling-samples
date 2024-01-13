@@ -1,0 +1,17 @@
+{
+    "name": "multi-tenancy",
+    "version": "1.0.0",
+    "scripts": {
+        "generate": "zenstack generate --output .zenstack && prisma db push",
+        "test": "jest"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "@prisma/client": "^5.8.0",
+        "@zenstackhq/runtime": "^1.6.2"
+    },
+    "devDependencies": {
+        "prisma": "^5.8.0",
+        "zenstack": "^1.6.2"
+    }
+}
